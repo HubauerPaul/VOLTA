@@ -7,6 +7,10 @@
 | **VOLTA Cockpit** | Driver display mounted in the kart. Reads the kart's CAN bus, shows speed, power, battery and boost status, and logs every drive. |
 | **VOLTA Pit** | Race engineer dashboard in the pit: live telemetry, lap times, energy strategy, alerts and preset messages to the driver. |
 | **VOLTA App** | Configuration app for speed limit, driving mode and boost, protected by a safety layer and user roles. |
+| **VOLTA Gate** | Portable, battery-powered timing gate on a tripod (IR beacon, optional light barrier). One gate for laps, or separate start and finish gates for runs. |
+| **VOLTA Pit Hub** | Portable pit connection: battery-powered Wi-Fi access point + LoRa radio on a mast. No fixed infrastructure or internet needed. |
+
+VOLTA is built to move: there is no fixed track, and everything outside the kart can be set up at a new venue in under 15 minutes.
 
 ## Status
 

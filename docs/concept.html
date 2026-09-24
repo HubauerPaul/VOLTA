@@ -172,6 +172,17 @@ td b{font-weight:600}
 .feat b{font-weight:600}
 .feat span{color:var(--muted);font-size:14px}
 
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.mode svg{width:100%;max-width:220px;height:auto;margin-bottom:6px;overflow:visible}
+.mode b{font-family:var(--display);font-size:20px;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+.mode span{color:var(--muted);font-size:14px}
+.m-track{fill:none;stroke:var(--line);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.m-gate{stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+.m-opt{stroke-dasharray:3 3}
+.m-txt{fill:var(--muted);font:600 8px var(--mono)}
+.rows-plain{display:flex;flex-direction:column;gap:12px}
+ol.clean{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:80ch}
 .arch{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;overflow-x:auto}
 .callout{background:var(--accent-soft);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
 .callout b{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.03em}
@@ -188,14 +199,14 @@ ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;m
   <span class="eyebrow">HTL E-Kart · Projekt 7 · Concept &amp; requirements draft · 24 Sep 2026</span>
   <h1>VOLTA</h1>
   <p class="expand"><b>V</b>ehicle <b>O</b>nboard <b>L</b>ive <b>T</b>elemetry &amp; <b>A</b>nalytics</p>
-  <div class="parts"><span><b>VOLTA Cockpit</b> driver display in the kart</span><span><b>VOLTA Pit</b> race engineer dashboard</span><span><b>VOLTA App</b> configuration app</span></div>
+  <div class="parts"><span><b>VOLTA Cockpit</b> driver display in the kart</span><span><b>VOLTA Pit</b> race engineer dashboard</span><span><b>VOLTA App</b> configuration app</span><span><b>VOLTA Gate</b> portable timing gate</span><span><b>VOLTA Pit Hub</b> portable pit connection</span></div>
   <p class="lede">What the driver display could look like, what the race engineer sees in the pit, and the hardware we need to build it. Based on the E-Kart Smart Cockpit spec (F01–F135), which we treat as a recommendation, not a contract. Every value on the mockups below is example data from a built-in simulation.</p>
   <div class="proposal-head"><span class="status">Proposal · not yet discussed</span><span class="muted">Hardware starting points for the team discussion, nothing decided or ordered yet.</span></div>
   <div class="decisions" style="margin-top:0">
     <div><b>Raspberry Pi 5 / CM5</b><span>Linux compute unit: SocketCAN, Wi-Fi access point, GPU for a 60 fps UI, logging and API.</span></div>
     <div><b>7″ · 1280×800 · ≥1000 nits</b><span>Sunlight-readable, optically bonded IPS panel. 5″ if it has to sit on the steering wheel.</span></div>
     <div><b>Wired CAN + CANlink</b><span>Isolated CAN FD HAT for the cockpit. Keep the CANlink wireless 3000 for the app, the laptop and fallback.</span></div>
-    <div><b>Wi-Fi to the pit, LoRa later</b><span>Race engineer dashboard in a browser over WebSocket. A long-range backup link comes in phase 2.</span></div>
+    <div><b>Portable pit hub + timing gates</b><span>Nothing fixed at any venue. A battery pit hub (Wi-Fi + LoRa) and tripod timing gates go up in under 15 minutes.</span></div>
   </div>
 </header>
 
@@ -337,17 +348,17 @@ ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;m
       <strong>VOLTA PIT · E-KART #01</strong>
       <span class="live">● LIVE</span>
       <span>SESSION TEST DRIVE 17</span>
-      <span>LINK 5 GHz −61 dBm · <span id="pitHz">9.8</span> Hz · 84 ms</span>
+      <span>HUB Wi-Fi −61 dBm · <span id="pitHz">9.8</span> Hz · 84 ms · LoRa standby</span><span>GATE S/F ● 87 %</span>
       <span>CONFIG: READ-ONLY</span>
     </div>
     <div class="pit-grid">
       <div class="pcard">
-        <h4>Track position (GNSS)</h4>
-        <svg class="spark" viewBox="0 0 200 124" role="img" aria-label="Track map with kart position">
+        <h4>Session trace (drawn from GNSS, no track map needed)</h4>
+        <svg class="spark" viewBox="0 0 200 124" role="img" aria-label="GNSS trace of this session with kart position and gate">
           <path id="track" d="M30,92 C10,92 10,62 30,57 L80,47 C95,44 95,27 110,24 L165,20 C190,18 192,47 170,52 L130,62 C115,66 120,82 135,84 L165,88 C185,92 180,110 160,108 L40,106 C25,106 20,94 30,92 Z" fill="none" stroke="#2c3842" stroke-width="7" stroke-linejoin="round"/>
           <path d="M30,92 C10,92 10,62 30,57 L80,47 C95,44 95,27 110,24 L165,20 C190,18 192,47 170,52 L130,62 C115,66 120,82 135,84 L165,88 C185,92 180,110 160,108 L40,106 C25,106 20,94 30,92 Z" fill="none" stroke="#56636e" stroke-width="1" stroke-dasharray="2 3"/>
           <line x1="100" y1="100" x2="100" y2="112" stroke="#fff" stroke-width="2"/>
-          <text x="104" y="120" fill="#8A97A2" font-size="7" font-family="JetBrains Mono,monospace">S/F</text>
+          <text x="104" y="120" fill="#8A97A2" font-size="7" font-family="JetBrains Mono,monospace">GATE S/F</text>
           <circle id="kartDot" r="4.5" fill="#FFC21A" stroke="#0B0F13" stroke-width="1.5" cx="100" cy="106"/>
         </svg>
         <div class="kpis">
@@ -402,17 +413,92 @@ ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;m
         </div>
       </div>
     </div>
-    <div class="pit-foot">Values are simulated · On-kart logging at 50 Hz, pit stream at 10 Hz · If the link drops, logging carries on on the kart and gets synced afterwards</div>
+    <div class="pit-foot">Values are simulated · On-kart logging at 50 Hz · Pit stream 10 Hz over hub Wi-Fi, 1 Hz over LoRa when out of Wi-Fi range · Full logs sync when the kart is back at the hub</div>
   </div>
 
   <div class="feat">
     <div><b>Live telemetry</b><span>Speed, power, SoC, temperatures and drive state at 10 Hz, each with a data-age marker.</span></div>
-    <div><b>Lap timing</b><span>A GNSS geofence on the start/finish line gives lap and sector times and a live delta to the best lap, shown on both screens.</span></div>
+    <div><b>Lap &amp; run timing</b><span>Portable gates give lap times (one start/finish gate) or run times (separate start and finish gates), plus a live delta to the best, on both screens.</span></div>
     <div><b>Energy strategy</b><span>SoC used per lap and a forecast of how many laps are left at the current pace. It also shows how many boosts are left.</span></div>
     <div><b>Alerts</b><span>Limp home, MIL, temperature limits, CAN loss, gaps in the life-cycle counter (F75) and a lost pit link.</span></div>
     <div><b>Driver messages</b><span>A fixed set of messages only, with no free text while driving. The driver acknowledges each one with a wheel button, and the acknowledgement is logged.</span></div>
     <div><b>Post-session analysis</b><span>Overlay laps on speed, power and SoC plots with boost events marked (F80–F87), plus CSV export.</span></div>
   </div>
+</section>
+
+<!-- ===================== PORTABLE TIMING & PIT ===================== -->
+<section id="portable">
+  <div class="sec-head">
+    <span class="eyebrow">No fixed track</span>
+    <h2>Portable timing &amp; pit hub</h2>
+    <span class="status">Proposal · not yet discussed</span>
+  </div>
+  <p>VOLTA runs at different venues without a permanent track. Everything outside the kart has to fit in a case, run on batteries and be ready in under 15 minutes. That means two portable parts: <b>VOLTA Gate</b> units on tripods for timing, and a <b>VOLTA Pit Hub</b> for the connection to the pit.</p>
+
+  <h3>Timing modes</h3>
+  <div class="modes">
+    <div class="mode">
+      <svg viewBox="0 0 160 70" aria-hidden="true"><path d="M30,55 C5,55 5,15 30,15 L130,15 C155,15 155,55 130,55 Z" class="m-track"/><line x1="80" y1="47" x2="80" y2="63" class="m-gate"/><text x="86" y="67" class="m-txt">S/F</text></svg>
+      <b>Circuit</b><span>One gate is both start and finish. Gives lap times, best lap and a live delta. The layout can be anything: a car park, cones, a hall.</span>
+    </div>
+    <div class="mode">
+      <svg viewBox="0 0 160 70" aria-hidden="true"><path d="M10,40 C50,40 60,25 90,28 S140,40 150,38" class="m-track"/><line x1="25" y1="32" x2="25" y2="48" class="m-gate"/><text x="14" y="62" class="m-txt">START</text><line x1="140" y1="30" x2="140" y2="46" class="m-gate"/><text x="124" y="62" class="m-txt">FINISH</text></svg>
+      <b>Sprint A→B</b><span>Separate start and finish gates. Gives run times, e.g. acceleration or slalom runs. Can start from standstill or with a flying start.</span>
+    </div>
+    <div class="mode">
+      <svg viewBox="0 0 160 70" aria-hidden="true"><path d="M30,55 C5,55 5,15 30,15 L130,15 C155,15 155,55 130,55 Z" class="m-track"/><line x1="80" y1="47" x2="80" y2="63" class="m-gate"/><line x1="148" y1="35" x2="162" y2="35" class="m-gate"/><line x1="80" y1="7" x2="80" y2="23" class="m-gate m-opt"/><text x="86" y="67" class="m-txt">S/F</text></svg>
+      <b>Sectors (optional)</b><span>Extra gates split a lap or run into sectors. Uses the same gate hardware with a different ID.</span>
+    </div>
+  </div>
+
+  <h3>How to detect the line</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>How it works</th><th>Accuracy</th><th>Indoors</th><th>Tells karts apart</th><th>Cockpit gets the time without a pit link</th><th>Two gates need clock sync</th></tr></thead>
+    <tbody>
+      <tr><td><b>Light barrier</b></td><td>Beam across the track on tripods (retro-reflective or through-beam). The gate timestamps the interruption</td><td class="num">≈ 1 ms</td><td>Yes</td><td>No: any object or person triggers it</td><td>No: the time has to be sent by radio</td><td>Yes (GNSS time or radio sync)</td></tr>
+      <tr><td><b>IR beacon</b> <span class="pick">Proposed</span></td><td>The gate emits a coded infrared signal and a receiver on the kart detects it. The kart timestamps the crossing itself. Common in kart lap timers</td><td class="num">≈ 5–10 ms, very repeatable</td><td>Yes</td><td>Yes: each kart times itself</td><td>Yes, instantly</td><td>No: one clock (the kart) measures start and finish</td></tr>
+      <tr><td><b>GNSS virtual line</b></td><td>A line is set on the map (“set line here” in VOLTA Pit). The crossing is interpolated from 10–25 Hz positions</td><td class="num">≈ 50–100 ms</td><td>No</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+    </tbody>
+  </table></div>
+  <div class="two">
+    <div class="callout"><b>Proposal: IR first, light barrier as reference</b><p>A light barrier is precise, but on its own it can't tell a kart from a person walking by. It also needs a radio link before the driver sees a time, and with separate start and finish gates the two gate clocks must be synchronised. An IR beacon avoids all three problems, because the kart measures both lines with its own clock. So each <b>VOLTA Gate</b> gets an IR beacon as its main timing, with a light barrier as an optional add-on for reference-grade times. A light-barrier trigger only counts if the kart saw the IR beacon within ±200 ms. The GNSS virtual line needs no extra hardware and serves as a fallback outdoors, and as phase 1 while the gates are being built.</p></div>
+    <div class="callout"><b>VOLTA Gate, one unit for every role</b>
+      <ul class="clean">
+        <li>Tripod, weatherproof box, USB-C battery for a full day</li>
+        <li>ESP32 + LoRa radio: reports battery, position and light-barrier events to the hub</li>
+        <li>Coded IR beacon: the gate ID tells the kart whether it is start, finish, S/F or a sector</li>
+        <li>GNSS module: gate position on the map + PPS time for light-barrier timestamps</li>
+        <li>Optional retro-reflective light barrier + reflector on a second tripod</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Pit connection that travels</h3>
+  <div class="two">
+    <div class="rows-plain">
+      <p>The <b>VOLTA Pit Hub</b> is a case with a telescopic mast (2–4 m, since height and line of sight matter more than transmit power). It needs no mains power and no internet.</p>
+      <ul class="clean">
+        <li><b>Wi-Fi 5 GHz access point</b> (outdoor AP or travel router) for full telemetry at 10 Hz, log sync, the VOLTA Pit laptop and phones running the VOLTA App</li>
+        <li><b>LoRa 868 MHz radio</b> for a small core packet at 1 Hz when the kart is out of Wi-Fi range: speed, SoC, drive state, lap events, alerts, driver messages. Uses the 869.4–869.65 MHz sub-band (10 % duty cycle); verify against the EU rules</li>
+        <li><b>12 V LiFePO4 battery</b> (≈ 20 Ah) for a full day, charged at home</li>
+        <li><b>Optional LTE router</b> to let people watch remotely (a COULD in the spec)</li>
+      </ul>
+    </div>
+    <div class="rows-plain">
+      <p><b>Network roles:</b> the hub is the access point, and the kart, laptops and phones join it. If the kart doesn't find a hub within about 20 s of booting, it opens its own access point (<code>VOLTA-KART-01</code>). The VOLTA App then still works without the hub, e.g. in the workshop.</p>
+      <p><b>If the link drops:</b> the kart always logs everything locally. Lap times come from its own IR receiver, so the cockpit never depends on the link. The full log syncs to the hub when the kart comes back into Wi-Fi range.</p>
+      <p><b>Coverage check:</b> during the first slow lap, VOLTA Pit colours the GNSS trace by Wi-Fi signal strength. Weak spots show up right away and you can move the mast.</p>
+    </div>
+  </div>
+
+  <h3>Setting up at a new venue (target: under 15 minutes)</h3>
+  <ol class="clean">
+    <li>Put up the pit hub on its mast near the pit area and switch it on.</li>
+    <li>Place the gate(s) at the line(s) and switch them on. They connect to the hub over LoRa and report their battery and position.</li>
+    <li>In VOLTA Pit, pick the mode (Circuit, Sprint or Free) and assign the gates.</li>
+    <li>Switch on the kart. It connects to the hub automatically.</li>
+    <li>Drive one slow out-lap. The trace gets drawn, the gates are checked and the Wi-Fi coverage is recorded.</li>
+  </ol>
 </section>
 
 <!-- ===================== ARCHITECTURE ===================== -->
@@ -421,7 +507,7 @@ ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;m
     <span class="eyebrow">System</span>
     <h2>Architecture</h2>
   </div>
-  <p>Everything runs on the cockpit unit, and the kart works completely offline (F101). The CAN source sits behind a single interface, so the wired bus, the CANlink over Wi-Fi and the simulator (F92, a MUST) can be swapped without touching the decoder or the UI.</p>
+  <p>Everything runs on the cockpit unit, and the kart works completely offline (F101). The gates and the pit hub are portable and optional: without them, the kart still drives, logs and shows GNSS lap times. The CAN source sits behind a single interface, so the wired bus, the CANlink over Wi-Fi and the simulator (F92, a MUST) can be swapped without touching the decoder or the UI.</p>
   <div class="arch">
 <pre class="mermaid">
 flowchart LR
@@ -440,13 +526,19 @@ flowchart LR
     STORE --> API["API<br/>REST + WebSocket"]
     API --> SAFE["Safety layer<br/>read-only switch"] --> ENC[Encoder] --> SRC
     GNSS[GNSS + IMU] --> STORE
+    IRRX[IR receiver] --> STORE
+    STORE --> LORA[LoRa radio]
   end
   HAT --> SRC
   CL -.-> SRC
   UI --> DISP[7-inch display]
   BTN[Wheel buttons] --> UI
-  API <-- "Wi-Fi AP" --> APP[VOLTA App]
-  API <-- "Wi-Fi 5 GHz / LoRa" --> PIT[VOLTA Pit]
+  GATE["VOLTA Gate x1-n<br/>IR beacon + light barrier"] -. "IR" .-> IRRX
+  GATE -. "LoRa: gate events" .-> HUB
+  API <-- "Wi-Fi 10 Hz" --> HUB["VOLTA Pit Hub<br/>Wi-Fi AP + LoRa, battery"]
+  LORA -. "LoRa 1 Hz" .-> HUB
+  HUB <--> PIT[VOLTA Pit]
+  HUB <--> APP[VOLTA App]
 </pre>
   </div>
   <div class="two">
@@ -483,12 +575,15 @@ flowchart LR
       <tr><td><b>CAN interface</b></td><td>CAN 2.0B/FD, <b>galvanically isolated</b>, bit rate matching the kart (probably 250/500 kbit/s, to be confirmed), switchable 120 Ω termination</td><td>MCP2518FD-based HAT with isolated transceiver (2-channel = spare for sniffing)</td><td class="num">€30–60</td></tr>
       <tr><td><b>Power supply</b></td><td>Automotive DC-DC, 9–36 V (or matching the kart's LV rail) → 5 V / 5 A, reverse-polarity and TVS protection, fused</td><td>Isolated automotive-grade DC-DC module</td><td class="num">€30–60</td></tr>
       <tr><td><b>Power-loss buffer</b></td><td>Ignition-sense input + supercap/UPS for 10–20 s so it can shut down cleanly and flush the logs. Read-only root filesystem</td><td>Supercap UPS HAT, or a DIY supercap + ideal-diode circuit</td><td class="num">€25–50</td></tr>
-      <tr><td><b>GNSS</b></td><td>≥ 10 Hz update rate, external active antenna. Needed for lap timing and the track map</td><td>u-blox M9/M10 class module</td><td class="num">€30–60</td></tr>
+      <tr><td><b>GNSS</b></td><td>≥ 10 Hz update rate, external active antenna. For the session trace, the coverage check and fallback timing outdoors</td><td>u-blox M9/M10 class module</td><td class="num">€30–60</td></tr>
+      <tr><td><b>IR receiver</b> (on the kart)</td><td>Detects the coded gate beacons, 5–15 m range, sunlight-filtered, mounted low at the side</td><td>DIY: IR receiver module behind a narrow tube + MCU, or a commercial kart beacon receiver</td><td class="num">€15–40</td></tr>
       <tr><td><b>IMU</b></td><td>6-axis, ±8 g, ≥ 100 Hz, for the G-force display</td><td>ICM-42688-P / BMI270 breakout</td><td class="num">€10–25</td></tr>
       <tr><td><b>Wheel buttons</b></td><td>2–3 sealed buttons (IP67) that can be pressed with gloves: next screen, acknowledge. <em>Boost stays on the VCU</em></td><td>Motorsport push buttons → GPIO with debounce</td><td class="num">€20–40</td></tr>
       <tr><td><b>Enclosure &amp; mount</b></td><td>IP65 front, sun hood, rubber vibration dampers, room for connectors (Deutsch DT / M12)</td><td>3D-printed PETG/ASA housing + damped mount</td><td class="num">€40–100</td></tr>
-      <tr><td><b>Pit link</b></td><td>Outdoor 5 GHz AP with a directional antenna at the pit wall. Phase 2: LoRa 868 MHz as a low-rate backup</td><td>Outdoor AP + LoRa module pair (mind the EU duty-cycle limits)</td><td class="num">€100–250</td></tr>
-      <tr><td colspan="3" style="text-align:right"><b>Prototype total (rough, excl. VAT)</b></td><td class="num"><b>≈ €500–1 100</b></td></tr>
+      <tr><td><b>LoRa radio</b> (on the kart)</td><td>868 MHz, for the 1 Hz core packet when out of Wi-Fi range</td><td>SX1262-based module</td><td class="num">€15–30</td></tr>
+      <tr><td><b>VOLTA Pit Hub</b></td><td>5 GHz outdoor AP or travel router, LoRa radio, 12 V LiFePO4 ≈ 20 Ah, telescopic mast 2–4 m, rugged case</td><td>OpenWrt-capable router + SX1262 module + LiFePO4 + mast</td><td class="num">€250–500</td></tr>
+      <tr><td><b>VOLTA Gate</b> (× 2)</td><td>Tripod, IP54 box, ESP32 + LoRa, coded IR beacon, GNSS, USB-C battery. Light barrier optional</td><td>ESP32-S3 + SX1262 + IR LED array + M10 GNSS. Add a retro-reflective photoelectric sensor + reflector if needed</td><td class="num">€80–200 each</td></tr>
+      <tr><td colspan="3" style="text-align:right"><b>Prototype total (rough, excl. VAT)</b></td><td class="num"><b>≈ €850–1 800</b></td></tr>
     </tbody>
   </table></div>
 
@@ -505,6 +600,8 @@ flowchart LR
       <tr><td>Logging</td><td class="num">Raw CAN, all frames + decoded signals at 50 Hz</td><td>F76–F79</td></tr>
       <tr><td>Pit telemetry</td><td class="num">10 Hz, &lt; 500 ms end-to-end</td><td>F123</td></tr>
       <tr><td>Hard power cut</td><td class="num">No corruption, at most 1 s of log lost</td><td>F100</td></tr>
+      <tr><td>Setup at a new venue (hub + 2 gates)</td><td class="num">&lt; 15 min, no mains power, no internet</td><td>—</td></tr>
+      <tr><td>Lap / run timing repeatability</td><td class="num">≤ 10 ms (IR gate), ≈ 1 ms with light barrier</td><td>COULD: lap timer</td></tr>
       <tr><td>Operating temperature / ingress</td><td class="num">−10…+60 °C / IP65 front, IP54 unit</td><td>—</td></tr>
     </tbody>
   </table></div>
@@ -527,6 +624,7 @@ flowchart LR
       <tr><td><b>API</b></td><td>REST + WebSocket, OpenAPI docs, token auth, rate limiting</td><td>F117–F123</td></tr>
       <tr><td><b>App &amp; pit</b></td><td>Web (PWA) or Flutter app. The pit dashboard is a browser app</td><td>Can share UI components</td></tr>
       <tr><td><b>Simulator</b></td><td>Replays DBC-based frames on <code>vcan0</code>, with scripted drive profiles and fault injection</td><td>F92–F95. Build this first</td></tr>
+      <tr><td><b>Gate &amp; hub firmware</b></td><td>ESP32 (ESP-IDF or Arduino): IR beacon coding, light-barrier timestamping against GNSS PPS, LoRa messages</td><td>The simulator should also emit fake gate events</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -541,7 +639,9 @@ flowchart LR
     <li><b>Mounting:</b> where does the display go (steering wheel or column/nose)? This decides 5″ vs 7″ and the reading distance.</li>
     <li><b>Power:</b> does the kart have a 12 V auxiliary rail, or do we need a DC-DC from the traction pack? What is the voltage range, and is there an ignition/key signal?</li>
     <li><b>CAN access:</b> are we allowed to tap the bus by wire? Where, and at which bit rate? Is the full MAX-Dome DBC available, especially RPM and torque (spec §6)?</li>
-    <li><b>Track:</b> how far is the pit from the farthest point of the track, and is there line of sight? This decides whether Wi-Fi alone is enough for the pit link.</li>
+    <li><b>Venues:</b> will we ever drive indoors (a hall or an underground car park)? GNSS doesn't work there, so indoors the IR gates become mandatory. How far can the kart get from the pit at the biggest venue?</li>
+    <li><b>Timing:</b> laps only, A→B runs, or both? Is the timing for training feedback (IR is enough) or for official results (add the light barrier)?</li>
+    <li><b>Several karts:</b> will more than one kart drive at the same time? A light barrier alone can't tell them apart; the IR method can.</li>
     <li><b>Conditions:</b> will the kart be driven in rain? This decides whether we need IP65 or IP67.</li>
     <li><b>Budget</b> and whether the hardware must be reusable for more karts later (F: “mehrere Karts”).</li>
   </ul>
