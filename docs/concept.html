@@ -1,0 +1,678 @@
+<title>VOLTA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ground:#EEF1F3; --surface:#FFFFFF; --ink:#14191E; --muted:#5A6570; --line:#D3D9DE;
+  --accent:#1F5FD1; --accent-soft:#E3ECFB; --ok:#1E9E5A; --warn:#C98A00; --bad:#D23B2F;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0E1215; --surface:#161C21; --ink:#E5EAEE; --muted:#95A1AB; --line:#29323A;
+    --accent:#77A4FF; --accent-soft:#1B2A45; --ok:#3CCB7F; --warn:#F0B43A; --bad:#FF6B5E;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0E1215; --surface:#161C21; --ink:#E5EAEE; --muted:#95A1AB; --line:#29323A;
+  --accent:#77A4FF; --accent-soft:#1B2A45; --ok:#3CCB7F; --warn:#F0B43A; --bad:#FF6B5E;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:20px;padding-block:32px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.05}
+h1{font-size:clamp(40px,6vw,64px);text-transform:uppercase}
+h2{font-size:32px;text-transform:uppercase}
+h3{font-size:21px;text-transform:uppercase;letter-spacing:.03em}
+p{margin:0;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:17px;color:var(--muted);max-width:70ch}
+section{display:flex;flex-direction:column;gap:20px}
+.sec-head{display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--ink);padding-top:14px}
+code,.mono{font-family:var(--mono);font-size:.88em}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+.expand{font-family:var(--display);font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:-6px}
+.expand b{color:var(--accent);font-weight:700}
+.parts{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:14px;color:var(--muted)}
+.parts b{color:var(--ink);font-weight:600}
+.proposal-head{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px;font-size:14px}
+.status{align-self:flex-start;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--warn);border:1px solid currentColor;border-radius:4px;padding:2px 8px}
+
+/* header */
+header{display:flex;flex-direction:column;gap:14px}
+.decisions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:8px}
+.decisions div{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.decisions b{font-family:var(--display);font-size:20px;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+.decisions span{color:var(--muted);font-size:13.5px}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.seg button{font:600 13px var(--body);color:var(--muted);background:transparent;border:0;padding:7px 12px;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.seg button:focus-visible,.pitbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ctl-label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+
+/* ============ COCKPIT MOCKUP ============ */
+.bezel{background:#1A1D20;border-radius:18px;padding:14px;box-shadow:0 1px 0 #2b3036 inset,0 18px 40px -20px rgba(0,0,0,.55);max-width:100%}
+.screen{container-type:inline-size;aspect-ratio:16/10;width:100%;border-radius:6px;overflow:hidden;position:relative}
+.ck{
+  --c-bg:#05080B; --c-panel:#0D1318; --c-ink:#EEF3F6; --c-dim:#7C8993; --c-line:#1D262D;
+  --c-power:#3AA0FF; --c-regen:#2FD27A; --c-boost:#FFC21A; --c-warn:#FF4D3D; --c-ok:#2FD27A;
+  position:absolute;inset:0;background:var(--c-bg);color:var(--c-ink);font-family:var(--display);
+  display:grid;grid-template-rows:7cqw 6.5cqw 1fr 8.5cqw;padding:1.6cqw 2cqw;gap:1.2cqw;
+  font-variant-numeric:tabular-nums;
+}
+.ck.day{--c-bg:#F3F5F6;--c-panel:#FFFFFF;--c-ink:#05080B;--c-dim:#56626C;--c-line:#D6DCE0;--c-power:#0F6BD8;--c-regen:#0E9A4E;--c-boost:#B98200;--c-warn:#D3261A;--c-ok:#0E9A4E}
+.ck-top{display:flex;align-items:center;justify-content:space-between;gap:2cqw}
+.chip{font-size:3.4cqw;font-weight:700;letter-spacing:.06em;padding:.2cqw 1.4cqw;border:.25cqw solid var(--c-ink);border-radius:.8cqw;line-height:1.15}
+.ck-status{display:flex;gap:2.2cqw;font-size:2.4cqw;font-weight:600;color:var(--c-dim);letter-spacing:.06em;align-items:center}
+.ck-status i{display:inline-block;width:1.4cqw;height:1.4cqw;border-radius:50%;background:var(--c-ok);margin-right:.7cqw;vertical-align:.1cqw}
+.ck-status i.off{background:var(--c-warn)}
+.ck-clock{font-size:3.4cqw;font-weight:600}
+/* power bar */
+.pbar{display:grid;grid-template-columns:repeat(4,1fr) .35cqw repeat(16,1fr);gap:.45cqw;align-items:stretch}
+.pbar .seg-c{background:var(--c-line);border-radius:.3cqw}
+.pbar .seg-c.on.p{background:var(--c-power)}
+.pbar .seg-c.on.r{background:var(--c-regen)}
+.pbar .seg-c.on.b{background:var(--c-boost)}
+.pbar .zero{background:var(--c-ink)}
+.ck-main{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:1.6cqw;min-height:0}
+.tile{background:var(--c-panel);border:.15cqw solid var(--c-line);border-radius:1cqw;padding:1.4cqw 1.6cqw;display:flex;flex-direction:column;gap:.6cqw;min-height:0}
+.lbl{font-size:2.3cqw;font-weight:600;letter-spacing:.1em;color:var(--c-dim)}
+.big{font-size:7.4cqw;font-weight:700;line-height:.95}
+.big small{font-size:3.4cqw;color:var(--c-dim);margin-left:.4cqw}
+.mid{font-size:4cqw;font-weight:600;line-height:1}
+.mid small{font-size:2.4cqw;color:var(--c-dim);margin-left:.3cqw}
+.socbar{height:2.2cqw;background:var(--c-line);border-radius:.4cqw;overflow:hidden}
+.socbar div{height:100%;background:var(--c-ink);width:82%}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.speed{font-size:25cqw;font-weight:700;line-height:.8;letter-spacing:-.02em}
+.unit{font-size:3.6cqw;font-weight:600;color:var(--c-dim);letter-spacing:.14em;margin-top:.6cqw}
+.limit{margin-top:1.4cqw;font-size:2.6cqw;font-weight:600;color:var(--c-dim);letter-spacing:.08em}
+.limit b{color:var(--c-ink)}
+.pitmsg{position:absolute;top:0;left:0;right:0;background:var(--c-boost);color:#05080B;font-size:3.6cqw;font-weight:700;letter-spacing:.06em;text-align:center;border-radius:.8cqw;padding:.5cqw 1cqw}
+.boost-state{font-size:5.2cqw;font-weight:700;line-height:1;color:var(--c-boost)}
+.boost-state.active{color:var(--c-bg);background:var(--c-boost);border-radius:.6cqw;padding:.3cqw .8cqw;align-self:flex-start}
+.boost-state.chg{color:var(--c-dim)}
+.boost-dots{display:flex;gap:.8cqw}
+.boost-dots span{width:2cqw;height:2cqw;border-radius:50%;border:.3cqw solid var(--c-boost)}
+.boost-dots span.full{background:var(--c-boost)}
+.ck-bottom{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:2cqw;align-items:center;border-top:.2cqw solid var(--c-line);padding-top:1cqw}
+.ck-bottom .mid{font-size:4.6cqw}
+.delta.neg{color:var(--c-ok)} .delta.pos{color:var(--c-warn)}
+/* alert states */
+.ck .alert{position:absolute;left:2cqw;right:2cqw;bottom:12cqw;background:var(--c-warn);color:#fff;text-align:center;font-size:4.6cqw;font-weight:700;letter-spacing:.08em;border-radius:1cqw;padding:.6cqw}
+.ck.limp{box-shadow:inset 0 0 0 .9cqw var(--c-warn)}
+.ck.lost .val{color:var(--c-dim)}
+/* tech + trip screens */
+.ck-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw;min-height:0}
+.rows{display:flex;flex-direction:column;gap:.35cqw}
+.row{display:grid;grid-template-columns:1fr auto 3.2cqw;align-items:baseline;gap:1cqw;font-size:3.1cqw;font-weight:600;border-bottom:.12cqw solid var(--c-line);padding-bottom:.3cqw}
+.row span:first-child{font-size:2.3cqw;color:var(--c-dim);letter-spacing:.08em}
+.age{width:1.3cqw;height:1.3cqw;border-radius:50%;background:var(--c-ok);justify-self:end;align-self:center}
+.age.stale{background:var(--c-warn)} .age.na{background:transparent;border:.2cqw solid var(--c-dim)}
+.trip-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:1.6cqw;min-height:0}
+.trip-grid .tile{justify-content:center}
+.ck [data-view]{display:none}
+.ck[data-screen="race"] [data-view="race"],.ck[data-screen="tech"] [data-view="tech"],.ck[data-screen="trip"] [data-view="trip"]{display:grid}
+
+.mock-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px 28px}
+.mock-notes div{display:flex;flex-direction:column;gap:4px}
+.mock-notes h3{font-size:18px}
+.mock-notes p{font-size:14px;color:var(--muted)}
+
+/* legibility table */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--ground)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pick{display:inline-block;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:1px}
+td b{font-weight:600}
+
+/* ============ PIT DASHBOARD ============ */
+.pit{background:#0B0F13;color:#DCE3E8;border-radius:10px;padding:16px;display:grid;gap:12px;font-family:var(--body);border:1px solid #1f262d}
+.pit-head{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;font-family:var(--mono);font-size:12px;color:#8A97A2}
+.pit-head strong{font-family:var(--display);font-size:24px;color:#fff;letter-spacing:.04em}
+.pit-head .live{color:#3CCB7F}
+.pit-grid{display:grid;grid-template-columns:1.1fr 1.4fr 1fr;gap:12px}
+.pcard{background:#121920;border:1px solid #1f2830;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pcard h4{margin:0;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#8A97A2}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpi{display:flex;flex-direction:column}
+.kpi b{font-family:var(--display);font-size:30px;font-weight:700;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.kpi span{font:11px var(--mono);color:#8A97A2;letter-spacing:.06em;text-transform:uppercase}
+.laps{width:100%;min-width:0;font-size:13px;font-family:var(--mono)}
+.laps td,.laps th{padding:4px 6px;border-bottom:1px solid #1f2830;background:transparent;color:inherit}
+.laps th{color:#8A97A2;font-size:10px}
+.laps .best{color:#B58CFF}
+.laps .neg{color:#3CCB7F}.laps .pos{color:#F0B43A}
+.alerts{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.alerts div{display:flex;gap:8px;align-items:baseline}
+.sev{font:600 10px var(--mono);padding:1px 6px;border-radius:3px;letter-spacing:.06em}
+.sev.w{background:#3a2d0c;color:#F0B43A}.sev.i{background:#12263f;color:#77A4FF}.sev.ok{background:#0f2f1e;color:#3CCB7F}
+.pitbtns{display:flex;flex-wrap:wrap;gap:6px}
+.pitbtn{font:700 14px var(--display);letter-spacing:.08em;text-transform:uppercase;background:#1c252d;color:#fff;border:1px solid #2c3842;border-radius:5px;padding:7px 11px;cursor:pointer}
+.pitbtn:hover{background:#26323c}
+.pitbtn.clear{color:#8A97A2}
+.spark{width:100%;height:auto;display:block}
+.pit-foot{font:12px var(--mono);color:#8A97A2}
+
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px 28px}
+.feat div{display:flex;flex-direction:column;gap:3px;border-left:2px solid var(--line);padding-left:12px}
+.feat b{font-weight:600}
+.feat span{color:var(--muted);font-size:14px}
+
+.arch{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;overflow-x:auto}
+.callout{background:var(--accent-soft);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.callout b{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.03em}
+ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media (max-width:860px){.pit-grid{grid-template-columns:1fr}.two{grid-template-columns:1fr}}
+@media (max-width:520px){.bezel{padding:7px;border-radius:12px}body{padding-inline:16px}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">HTL E-Kart · Projekt 7 · Concept &amp; requirements draft · 24 Sep 2026</span>
+  <h1>VOLTA</h1>
+  <p class="expand"><b>V</b>ehicle <b>O</b>nboard <b>L</b>ive <b>T</b>elemetry &amp; <b>A</b>nalytics</p>
+  <div class="parts"><span><b>VOLTA Cockpit</b> driver display in the kart</span><span><b>VOLTA Pit</b> race engineer dashboard</span><span><b>VOLTA App</b> configuration app</span></div>
+  <p class="lede">What the driver display could look like, what the race engineer sees in the pit, and the hardware we need to build it. Based on the E-Kart Smart Cockpit spec (F01–F135), which we treat as a recommendation, not a contract. Every value on the mockups below is example data from a built-in simulation.</p>
+  <div class="proposal-head"><span class="status">Proposal · not yet discussed</span><span class="muted">Hardware starting points for the team discussion, nothing decided or ordered yet.</span></div>
+  <div class="decisions" style="margin-top:0">
+    <div><b>Raspberry Pi 5 / CM5</b><span>Linux compute unit: SocketCAN, Wi-Fi access point, GPU for a 60 fps UI, logging and API.</span></div>
+    <div><b>7″ · 1280×800 · ≥1000 nits</b><span>Sunlight-readable, optically bonded IPS panel. 5″ if it has to sit on the steering wheel.</span></div>
+    <div><b>Wired CAN + CANlink</b><span>Isolated CAN FD HAT for the cockpit. Keep the CANlink wireless 3000 for the app, the laptop and fallback.</span></div>
+    <div><b>Wi-Fi to the pit, LoRa later</b><span>Race engineer dashboard in a browser over WebSocket. A long-range backup link comes in phase 2.</span></div>
+  </div>
+</header>
+
+<!-- ===================== COCKPIT ===================== -->
+<section id="cockpit">
+  <div class="sec-head">
+    <span class="eyebrow">Driver display</span>
+    <h2>VOLTA Cockpit</h2>
+  </div>
+  <p>Three screens, as the spec asks (Race, Technical, Trip). The driver switches between them with one steering-wheel button. Each screen can also be put into one of the states the spec says must be visible. Try the controls below.</p>
+
+  <div class="controls" role="group" aria-label="Mockup controls">
+    <div><span class="ctl-label">Screen</span>
+      <span class="seg" id="scrSeg">
+        <button type="button" id="scr-race" data-v="race" aria-pressed="true">Race</button>
+        <button type="button" id="scr-tech" data-v="tech" aria-pressed="false">Technical</button>
+        <button type="button" id="scr-trip" data-v="trip" aria-pressed="false">Trip</button>
+      </span></div>
+    <div><span class="ctl-label">State</span>
+      <span class="seg" id="stSeg">
+        <button type="button" id="st-normal" data-v="normal" aria-pressed="true">Driving</button>
+        <button type="button" id="st-boost" data-v="boost" aria-pressed="false">Boost</button>
+        <button type="button" id="st-lost" data-v="lost" aria-pressed="false">CAN lost</button>
+        <button type="button" id="st-limp" data-v="limp" aria-pressed="false">Limp home</button>
+      </span></div>
+    <div><span class="ctl-label">Mode</span>
+      <span class="seg" id="thSeg">
+        <button type="button" id="th-night" data-v="night" aria-pressed="true">Night</button>
+        <button type="button" id="th-day" data-v="day" aria-pressed="false">Day</button>
+      </span></div>
+  </div>
+
+  <div class="bezel"><div class="screen">
+    <div class="ck" id="ck" data-screen="race">
+      <div class="ck-top">
+        <span class="chip" id="mode">SPORT</span>
+        <div class="ck-status"><span><i id="dCan"></i>CAN</span><span><i id="dPit"></i>PIT</span><span id="ckTemp">BAT 34°</span></div>
+        <span class="ck-clock" id="lapNo">LAP 03</span>
+      </div>
+      <div class="pbar" id="pbar" aria-label="Power bar, regeneration left of zero"></div>
+
+      <!-- RACE -->
+      <div class="ck-main" data-view="race">
+        <div class="tile">
+          <span class="lbl">BATTERY</span>
+          <span class="big val" id="soc">82<small>%</small></span>
+          <div class="socbar"><div id="socBar"></div></div>
+          <span class="lbl" style="margin-top:.8cqw">RANGE</span>
+          <span class="mid val" id="range">31<small>km</small></span>
+        </div>
+        <div class="center">
+          <div class="pitmsg" id="pitMsg" hidden></div>
+          <span class="speed val" id="speed">64</span>
+          <span class="unit">KM/H</span>
+          <span class="limit">POWER <b id="pw">6.8 kW</b> &nbsp;·&nbsp; LIMIT <b>60</b></span>
+        </div>
+        <div class="tile">
+          <span class="lbl">BOOST</span>
+          <span class="boost-state" id="bState">READY</span>
+          <span class="mid" id="bTime">&nbsp;</span>
+          <span class="lbl" style="margin-top:auto">LEFT</span>
+          <div class="boost-dots" id="bDots"></div>
+        </div>
+      </div>
+
+      <!-- TECHNICAL -->
+      <div class="ck-grid" data-view="tech">
+        <div class="tile"><span class="lbl">MOTOR</span><div class="rows">
+          <div class="row"><span>RPM</span><span class="val" id="t-rpm">4 820</span><i class="age" id="a-rpm"></i></div>
+          <div class="row"><span>TORQUE</span><span class="val" id="t-tq">27 Nm</span><i class="age" id="a-tq"></i></div>
+          <div class="row"><span>POWER</span><span class="val" id="t-pw">6.8 kW</span><i class="age" id="a-pw"></i></div>
+          <div class="row"><span>MOTOR TEMP</span><span class="val">—</span><i class="age na" title="Signal not yet found on the CAN bus"></i></div>
+        </div></div>
+        <div class="tile"><span class="lbl">BATTERY</span><div class="rows">
+          <div class="row"><span>SOC</span><span class="val" id="t-soc">82 %</span><i class="age" id="a-soc"></i></div>
+          <div class="row"><span>SOH</span><span class="val">96 %</span><i class="age" id="a-soh"></i></div>
+          <div class="row"><span>VOLTAGE</span><span class="val" id="t-v">51.2 V</span><i class="age" id="a-v"></i></div>
+          <div class="row"><span>CURRENT</span><span class="val" id="t-i">133 A</span><i class="age" id="a-i"></i></div>
+          <div class="row"><span>TEMP</span><span class="val">34 °C</span><i class="age" id="a-t"></i></div>
+        </div></div>
+        <div class="tile"><span class="lbl">SYSTEM</span><div class="rows">
+          <div class="row"><span>CAN</span><span class="val" id="t-can">ONLINE</span><i class="age" id="a-can"></i></div>
+          <div class="row"><span>FRAMES/S</span><span class="val" id="t-fps">412</span><i class="age" id="a-fps"></i></div>
+          <div class="row"><span>DRIVE</span><span class="val" id="t-drv">DRIVE</span><i class="age" id="a-drv"></i></div>
+          <div class="row"><span>MIL</span><span class="val">OFF</span><i class="age" id="a-mil"></i></div>
+          <div class="row"><span>WRITE</span><span class="val">READ-ONLY</span><i class="age"></i></div>
+        </div></div>
+      </div>
+
+      <!-- TRIP -->
+      <div class="trip-grid" data-view="trip">
+        <div class="tile"><span class="lbl">DISTANCE</span><span class="big" id="tr-d">8.4<small>km</small></span></div>
+        <div class="tile"><span class="lbl">TIME</span><span class="big">12:43</span></div>
+        <div class="tile"><span class="lbl">ENERGY</span><span class="big">0.61<small>kWh</small></span></div>
+        <div class="tile"><span class="lbl">AVERAGE</span><span class="big">39<small>km/h</small></span></div>
+        <div class="tile"><span class="lbl">MAXIMUM</span><span class="big">68<small>km/h</small></span></div>
+        <div class="tile"><span class="lbl">CONSUMPTION</span><span class="big">73<small>Wh/km</small></span></div>
+      </div>
+
+      <div class="ck-bottom">
+        <span class="lbl">LAP</span>
+        <span class="mid" id="lapT">0:41.2</span>
+        <span class="mid delta neg" id="delta">−0.34</span>
+        <span class="mid" style="color:var(--c-dim)">LAST 0:52.87</span>
+      </div>
+      <div class="alert" id="alert" hidden></div>
+    </div>
+  </div></div>
+
+  <div class="mock-notes">
+    <div><h3>Speed first</h3><p>Speed is about 30% of the screen height (F36). Everything else sits around it, and there are no more than seven values on the Race screen.</p></div>
+    <div><h3>Power bar = shift lights</h3><p>The 20-segment bar across the top can be read without focusing on it. Blue is drive power, green is recuperation left of zero (F15), and amber means boost is active.</p></div>
+    <div><h3>Never show frozen values</h3><p>Every signal has a timestamp. After 3 missed cycles (at most 500 ms) the value turns into “—” and a red banner appears (F104, F105). The dots on the Technical screen show how old each signal is.</p></div>
+    <div><h3>Pit messages</h3><p>Messages from the race engineer appear in amber above the speed and the driver dismisses them with a wheel button. You can try it with the pit dashboard further down the page.</p></div>
+  </div>
+
+  <h3 style="margin-top:8px">Legibility budget (7″, 1280×800 ≈ 8.5 px/mm, reading distance ~70 cm)</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Element</th><th>Min. character height</th><th>≈ Pixels</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><b>Speed</b></td><td class="num">35–40 mm</td><td class="num">300–340 px</td><td>Needs to be readable in under 0.3 s through peripheral vision at 60+ km/h</td></tr>
+      <tr><td><b>Key values</b> (SoC, boost, lap)</td><td class="num">≥ 8 mm</td><td class="num">≥ 70 px</td><td>Should be readable in one glance with the helmet visor down</td></tr>
+      <tr><td><b>Labels</b></td><td class="num">≥ 3.5 mm</td><td class="num">≥ 30 px</td><td>Only needed once the driver knows the layout</td></tr>
+      <tr><td><b>Technical screen rows</b></td><td class="num">≥ 4.5 mm</td><td class="num">≥ 40 px</td><td>Meant to be read while stopped or slow in the pit lane</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== RACE ENGINEER ===================== -->
+<section id="pit">
+  <div class="sec-head">
+    <span class="eyebrow">Race engineer monitoring</span>
+    <h2>VOLTA Pit</h2>
+  </div>
+  <p>A browser dashboard on a laptop or tablet in the pit. It uses the same WebSocket telemetry the configuration app uses (F123), so no second backend is needed. The race engineer <em>watches</em> the kart and <em>sends predefined messages</em>. Pit-to-driver messages never change vehicle parameters. Config writes still go through the spec's safety layer (F66–F73). Press a message button below and it appears on the cockpit above.</p>
+
+  <div class="pit">
+    <div class="pit-head">
+      <strong>VOLTA PIT · E-KART #01</strong>
+      <span class="live">● LIVE</span>
+      <span>SESSION TEST DRIVE 17</span>
+      <span>LINK 5 GHz −61 dBm · <span id="pitHz">9.8</span> Hz · 84 ms</span>
+      <span>CONFIG: READ-ONLY</span>
+    </div>
+    <div class="pit-grid">
+      <div class="pcard">
+        <h4>Track position (GNSS)</h4>
+        <svg class="spark" viewBox="0 0 200 124" role="img" aria-label="Track map with kart position">
+          <path id="track" d="M30,92 C10,92 10,62 30,57 L80,47 C95,44 95,27 110,24 L165,20 C190,18 192,47 170,52 L130,62 C115,66 120,82 135,84 L165,88 C185,92 180,110 160,108 L40,106 C25,106 20,94 30,92 Z" fill="none" stroke="#2c3842" stroke-width="7" stroke-linejoin="round"/>
+          <path d="M30,92 C10,92 10,62 30,57 L80,47 C95,44 95,27 110,24 L165,20 C190,18 192,47 170,52 L130,62 C115,66 120,82 135,84 L165,88 C185,92 180,110 160,108 L40,106 C25,106 20,94 30,92 Z" fill="none" stroke="#56636e" stroke-width="1" stroke-dasharray="2 3"/>
+          <line x1="100" y1="100" x2="100" y2="112" stroke="#fff" stroke-width="2"/>
+          <text x="104" y="120" fill="#8A97A2" font-size="7" font-family="JetBrains Mono,monospace">S/F</text>
+          <circle id="kartDot" r="4.5" fill="#FFC21A" stroke="#0B0F13" stroke-width="1.5" cx="100" cy="106"/>
+        </svg>
+        <div class="kpis">
+          <div class="kpi"><b id="pSpd">64</b><span>km/h</span></div>
+          <div class="kpi"><b id="pPw">6.8</b><span>kW</span></div>
+          <div class="kpi"><b id="pSoc">82</b><span>% SoC</span></div>
+          <div class="kpi"><b>0.9<small style="font-size:16px">g</small></b><span>lat. G</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <h4>Speed · last 60 s</h4>
+        <svg class="spark" viewBox="0 0 300 110" preserveAspectRatio="none" role="img" aria-label="Speed trace of the last 60 seconds">
+          <g stroke="#1f2830" stroke-width="1">
+            <line x1="0" y1="20" x2="300" y2="20"/><line x1="0" y1="55" x2="300" y2="55"/><line x1="0" y1="90" x2="300" y2="90"/>
+          </g>
+          <text x="2" y="17" fill="#8A97A2" font-size="8" font-family="JetBrains Mono,monospace">80</text>
+          <text x="2" y="52" fill="#8A97A2" font-size="8" font-family="JetBrains Mono,monospace">40</text>
+          <path id="sparkArea" fill="rgba(58,160,255,.14)" d=""/>
+          <polyline id="sparkLine" fill="none" stroke="#3AA0FF" stroke-width="1.8" points=""/>
+          <circle id="sparkEnd" r="3" fill="#3AA0FF" cx="300" cy="55"/>
+        </svg>
+        <h4>Energy strategy</h4>
+        <div class="kpis">
+          <div class="kpi"><b>2.9<small style="font-size:16px">%</small></b><span>SoC per lap</span></div>
+          <div class="kpi"><b>26</b><span>laps left @ pace</span></div>
+          <div class="kpi"><b>2 / 3</b><span>boosts used</span></div>
+          <div class="kpi"><b>41<small style="font-size:16px">°C</small></b><span>batt. max</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <h4>Laps</h4>
+        <table class="laps"><thead><tr><th>#</th><th>Time</th><th>Δ best</th><th>SoC</th></tr></thead>
+          <tbody>
+            <tr><td>01</td><td>0:55.12</td><td class="pos">+2.61</td><td>88</td></tr>
+            <tr><td>02</td><td class="best">0:52.51</td><td>—</td><td>85</td></tr>
+            <tr><td>03</td><td>0:52.87</td><td class="pos">+0.36</td><td>82</td></tr>
+            <tr><td>04</td><td id="curLap">0:41.2…</td><td class="neg">−0.34</td><td>—</td></tr>
+          </tbody></table>
+        <h4>Alerts</h4>
+        <div class="alerts">
+          <div><span class="sev w">WARN</span>Battery temp above 40 °C, lap 03</div>
+          <div><span class="sev i">INFO</span>Boost used, 5.0 s, lap 03</div>
+          <div><span class="sev ok">OK</span>CAN 412 frames/s, no counter gaps</div>
+        </div>
+        <h4>Message to driver</h4>
+        <div class="pitbtns">
+          <button class="pitbtn" type="button" data-msg="BOX THIS LAP">Box</button>
+          <button class="pitbtn" type="button" data-msg="PUSH">Push</button>
+          <button class="pitbtn" type="button" data-msg="SAVE ENERGY">Save</button>
+          <button class="pitbtn" type="button" data-msg="BOOST AVAILABLE">Boost</button>
+          <button class="pitbtn clear" type="button" data-msg="">Clear</button>
+        </div>
+      </div>
+    </div>
+    <div class="pit-foot">Values are simulated · On-kart logging at 50 Hz, pit stream at 10 Hz · If the link drops, logging carries on on the kart and gets synced afterwards</div>
+  </div>
+
+  <div class="feat">
+    <div><b>Live telemetry</b><span>Speed, power, SoC, temperatures and drive state at 10 Hz, each with a data-age marker.</span></div>
+    <div><b>Lap timing</b><span>A GNSS geofence on the start/finish line gives lap and sector times and a live delta to the best lap, shown on both screens.</span></div>
+    <div><b>Energy strategy</b><span>SoC used per lap and a forecast of how many laps are left at the current pace. It also shows how many boosts are left.</span></div>
+    <div><b>Alerts</b><span>Limp home, MIL, temperature limits, CAN loss, gaps in the life-cycle counter (F75) and a lost pit link.</span></div>
+    <div><b>Driver messages</b><span>A fixed set of messages only, with no free text while driving. The driver acknowledges each one with a wheel button, and the acknowledgement is logged.</span></div>
+    <div><b>Post-session analysis</b><span>Overlay laps on speed, power and SoC plots with boost events marked (F80–F87), plus CSV export.</span></div>
+  </div>
+</section>
+
+<!-- ===================== ARCHITECTURE ===================== -->
+<section id="arch">
+  <div class="sec-head">
+    <span class="eyebrow">System</span>
+    <h2>Architecture</h2>
+  </div>
+  <p>Everything runs on the cockpit unit, and the kart works completely offline (F101). The CAN source sits behind a single interface, so the wired bus, the CANlink over Wi-Fi and the simulator (F92, a MUST) can be swapped without touching the decoder or the UI.</p>
+  <div class="arch">
+<pre class="mermaid">
+flowchart LR
+  subgraph KART["E-Kart"]
+    VCU[VCU] --- BUS((CAN bus))
+    BMS[BMS] --- BUS
+    MOT[Motor ctrl] --- BUS
+  end
+  BUS -- "wired, isolated" --> HAT[CAN FD HAT]
+  BUS -. "Wi-Fi / BT" .-> CL[CANlink wireless 3000]
+  subgraph CU["VOLTA Cockpit unit · Pi 5 / CM5 (proposed)"]
+    SRC["CAN source<br/>SocketCAN | CANlink | Simulator"] --> DEC["Decoder<br/>DBC file"]
+    DEC --> STORE["Signal store<br/>value + timestamp"]
+    STORE --> UI["Cockpit UI<br/>Qt/QML, kiosk"]
+    STORE --> LOG["Logger<br/>SQLite + raw CAN"]
+    STORE --> API["API<br/>REST + WebSocket"]
+    API --> SAFE["Safety layer<br/>read-only switch"] --> ENC[Encoder] --> SRC
+    GNSS[GNSS + IMU] --> STORE
+  end
+  HAT --> SRC
+  CL -.-> SRC
+  UI --> DISP[7-inch display]
+  BTN[Wheel buttons] --> UI
+  API <-- "Wi-Fi AP" --> APP[VOLTA App]
+  API <-- "Wi-Fi 5 GHz / LoRa" --> PIT[VOLTA Pit]
+</pre>
+  </div>
+  <div class="two">
+    <div class="callout"><b>Why wired CAN for the cockpit</b><p>The spec itself says the CANlink manual warns against using its radio link for anything safety-relevant. Limp home, the MIL and speed are exactly that kind of information. A wired, galvanically isolated tap has one fewer failure point and adds almost no latency. The CANlink is still useful for the phone app and for sniffing from a laptop. Phase 1 can start on CANlink only, since the CAN source interface makes the switch trivial.</p></div>
+    <div class="callout"><b>Why Qt/QML for the cockpit UI</b><p>It renders straight to the display (EGLFS) with no desktop and no browser, which gives the fastest boot and a steady 60 fps (F35, F97). The config app and the pit dashboard stay web-based (or Flutter for the app), because they only need the API. If the team is much stronger in web tech, a Chromium kiosk under <code>cage</code> works too. The catch is 5–10 s more boot time.</p></div>
+  </div>
+</section>
+
+<!-- ===================== HARDWARE ===================== -->
+<section id="hw">
+  <div class="sec-head">
+    <span class="eyebrow">Technical requirements</span>
+    <h2>Hardware</h2>
+    <span class="status">Proposal · not yet discussed</span>
+  </div>
+
+  <h3>Compute unit, options compared</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Option</th><th>Strengths</th><th>Weaknesses</th><th>Fit</th></tr></thead>
+    <tbody>
+      <tr><td><b>Raspberry Pi 5 (4 GB)</b> for the prototype → <b>Compute Module 5</b> with eMMC for the kart <span class="pick">Proposed</span></td><td>Linux + SocketCAN, built-in Wi-Fi/BT, GPU with 2× display outputs (HDMI/DSI), built-in RTC, big community. Easy for students to pick up</td><td>Not automotive-grade. Needs care around power cuts and boot time. CAN needs an add-on board</td><td>Covers every MUST in the spec: logging, API, app, simulator</td></tr>
+      <tr><td><b>NXP i.MX 8M Plus / i.MX 93 SoM</b></td><td>Native CAN FD, industrial temperature range, long-term availability</td><td>Yocto BSP learning curve, higher price, smaller community</td><td>A good choice for a v2 or a “product” version</td></tr>
+      <tr><td><b>MCU + LVGL</b> (STM32H7, ESP32-P4/S3)</td><td>Boots in under 1 s, native CAN (FDCAN/TWAI), handles power cuts well, low power draw</td><td>Logging, REST/WebSocket, user roles and trip analysis are much harder to build</td><td>Only for the display itself, or as a hybrid next to a Linux box</td></tr>
+      <tr><td><b>Ready-made industrial HMI</b> (e.g. CM4-based panel PCs with CAN and 9–36 V input)</td><td>Enclosure, power supply and CAN already solved</td><td>Usually 350–500 nits and 10″, which is too dim and too large for a kart</td><td>Only worth it if brightness and size check out</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Bill of materials, prototype</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Component</th><th>Requirement</th><th>Example to evaluate</th><th>Rough cost</th></tr></thead>
+    <tbody>
+      <tr><td><b>Compute</b></td><td>≥ 4 GB RAM, eMMC or NVMe (no SD card in the kart), Wi-Fi 5 GHz</td><td>Raspberry Pi 5 4 GB + NVMe HAT → CM5 4 GB/32 GB eMMC + carrier</td><td class="num">€80–180</td></tr>
+      <tr><td><b>Display</b></td><td>7″ IPS, 1280×800, <b>≥ 1000 cd/m²</b>, optically bonded, anti-glare/AR, −20…+70 °C, PWM dimming for night mode, DSI or HDMI. Touch is optional and locked while driving</td><td>High-brightness “sunlight readable” industrial 7″ panels. Test outdoors with sunglasses and visor</td><td class="num">€150–300</td></tr>
+      <tr><td><b>CAN interface</b></td><td>CAN 2.0B/FD, <b>galvanically isolated</b>, bit rate matching the kart (probably 250/500 kbit/s, to be confirmed), switchable 120 Ω termination</td><td>MCP2518FD-based HAT with isolated transceiver (2-channel = spare for sniffing)</td><td class="num">€30–60</td></tr>
+      <tr><td><b>Power supply</b></td><td>Automotive DC-DC, 9–36 V (or matching the kart's LV rail) → 5 V / 5 A, reverse-polarity and TVS protection, fused</td><td>Isolated automotive-grade DC-DC module</td><td class="num">€30–60</td></tr>
+      <tr><td><b>Power-loss buffer</b></td><td>Ignition-sense input + supercap/UPS for 10–20 s so it can shut down cleanly and flush the logs. Read-only root filesystem</td><td>Supercap UPS HAT, or a DIY supercap + ideal-diode circuit</td><td class="num">€25–50</td></tr>
+      <tr><td><b>GNSS</b></td><td>≥ 10 Hz update rate, external active antenna. Needed for lap timing and the track map</td><td>u-blox M9/M10 class module</td><td class="num">€30–60</td></tr>
+      <tr><td><b>IMU</b></td><td>6-axis, ±8 g, ≥ 100 Hz, for the G-force display</td><td>ICM-42688-P / BMI270 breakout</td><td class="num">€10–25</td></tr>
+      <tr><td><b>Wheel buttons</b></td><td>2–3 sealed buttons (IP67) that can be pressed with gloves: next screen, acknowledge. <em>Boost stays on the VCU</em></td><td>Motorsport push buttons → GPIO with debounce</td><td class="num">€20–40</td></tr>
+      <tr><td><b>Enclosure &amp; mount</b></td><td>IP65 front, sun hood, rubber vibration dampers, room for connectors (Deutsch DT / M12)</td><td>3D-printed PETG/ASA housing + damped mount</td><td class="num">€40–100</td></tr>
+      <tr><td><b>Pit link</b></td><td>Outdoor 5 GHz AP with a directional antenna at the pit wall. Phase 2: LoRa 868 MHz as a low-rate backup</td><td>Outdoor AP + LoRa module pair (mind the EU duty-cycle limits)</td><td class="num">€100–250</td></tr>
+      <tr><td colspan="3" style="text-align:right"><b>Prototype total (rough, excl. VAT)</b></td><td class="num"><b>≈ €500–1 100</b></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Performance &amp; environment targets</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Requirement</th><th>Target</th><th>Spec ref.</th></tr></thead>
+    <tbody>
+      <tr><td>Power-on → splash screen</td><td class="num">&lt; 3 s</td><td>F96</td></tr>
+      <tr><td>Power-on → live cockpit with CAN connected</td><td class="num">&lt; 10 s (stretch goal &lt; 6 s)</td><td>F02, F96–F99</td></tr>
+      <tr><td>CAN frame → pixel latency</td><td class="num">&lt; 100 ms</td><td>F04–F06</td></tr>
+      <tr><td>UI frame rate / value refresh</td><td class="num">60 fps / ≥ 10 Hz</td><td>F36</td></tr>
+      <tr><td>Stale-data detection</td><td class="num">3 missed cycles, max. 500 ms</td><td>F104–F106</td></tr>
+      <tr><td>App restart after crash</td><td class="num">&lt; 3 s (systemd + hardware watchdog)</td><td>F100</td></tr>
+      <tr><td>Logging</td><td class="num">Raw CAN, all frames + decoded signals at 50 Hz</td><td>F76–F79</td></tr>
+      <tr><td>Pit telemetry</td><td class="num">10 Hz, &lt; 500 ms end-to-end</td><td>F123</td></tr>
+      <tr><td>Hard power cut</td><td class="num">No corruption, at most 1 s of log lost</td><td>F100</td></tr>
+      <tr><td>Operating temperature / ingress</td><td class="num">−10…+60 °C / IP65 front, IP54 unit</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== SOFTWARE ===================== -->
+<section id="sw">
+  <div class="sec-head">
+    <span class="eyebrow">Technical requirements</span>
+    <h2>Software stack</h2>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Layer</th><th>Proposal</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><b>OS</b></td><td>Raspberry Pi OS Lite (64-bit), read-only root with overlayfs, separate log partition</td><td>Move to Buildroot/Yocto later if boot time needs it</td></tr>
+      <tr><td><b>Services</b></td><td>systemd units with <code>Restart=always</code>, hardware watchdog, splash via Plymouth or early KMS</td><td>F96–F100</td></tr>
+      <tr><td><b>CAN</b></td><td>SocketCAN · <b>DBC file</b> as the single source of truth for signals (python-can + cantools, or .NET)</td><td>Covers F07, F91 and F135. The signal matrix <em>is</em> the DBC file</td></tr>
+      <tr><td><b>Cockpit UI</b></td><td>Qt 6 / QML on EGLFS</td><td>Day and night themes follow an ambient light sensor or the clock (F38/F39)</td></tr>
+      <tr><td><b>Data</b></td><td>SQLite (trips, audit log, users) + raw CAN in candump/ASC format + CSV export</td><td>F77–F79, F112–F114</td></tr>
+      <tr><td><b>API</b></td><td>REST + WebSocket, OpenAPI docs, token auth, rate limiting</td><td>F117–F123</td></tr>
+      <tr><td><b>App &amp; pit</b></td><td>Web (PWA) or Flutter app. The pit dashboard is a browser app</td><td>Can share UI components</td></tr>
+      <tr><td><b>Simulator</b></td><td>Replays DBC-based frames on <code>vcan0</code>, with scripted drive profiles and fault injection</td><td>F92–F95. Build this first</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== OPEN QUESTIONS ===================== -->
+<section id="open">
+  <div class="sec-head">
+    <span class="eyebrow">For the hardware discussion</span>
+    <h2>Open questions</h2>
+  </div>
+  <ul class="clean">
+    <li><b>Mounting:</b> where does the display go (steering wheel or column/nose)? This decides 5″ vs 7″ and the reading distance.</li>
+    <li><b>Power:</b> does the kart have a 12 V auxiliary rail, or do we need a DC-DC from the traction pack? What is the voltage range, and is there an ignition/key signal?</li>
+    <li><b>CAN access:</b> are we allowed to tap the bus by wire? Where, and at which bit rate? Is the full MAX-Dome DBC available, especially RPM and torque (spec §6)?</li>
+    <li><b>Track:</b> how far is the pit from the farthest point of the track, and is there line of sight? This decides whether Wi-Fi alone is enough for the pit link.</li>
+    <li><b>Conditions:</b> will the kart be driven in rain? This decides whether we need IP65 or IP67.</li>
+    <li><b>Budget</b> and whether the hardware must be reusable for more karts later (F: “mehrere Karts”).</li>
+  </ul>
+  <div class="callout"><b>Suggested first steps</b>
+    <ul class="clean">
+      <li>Build the CAN signal matrix / DBC from the MAX-Dome document and mark each signal as documented or verified.</li>
+      <li>Record a CAN log on the real kart with the CANlink and a laptop.</li>
+      <li>Build the simulator that replays that log. Then build the cockpit UI against the simulator on a Pi 5 with any HDMI screen.</li>
+      <li>Order one high-brightness display sample and test it outdoors before buying the rest.</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const ck=$('ck');
+  let screen='race', state='normal', pitText='';
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // power bar
+  const pbar=$('pbar'); const segs=[];
+  for(let i=0;i<21;i++){const d=document.createElement('div');d.className=i===4?'zero':'seg-c';pbar.appendChild(d);if(i!==4)segs.push(d);}
+  // boost dots
+  const bDots=$('bDots');
+  for(let i=0;i<3;i++){const s=document.createElement('span');bDots.appendChild(s);}
+
+  function bindSeg(id,cb){
+    const g=$(id);
+    g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+      g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));cb(b.dataset.v);});
+  }
+  bindSeg('scrSeg',v=>{screen=v;ck.dataset.screen=v;});
+  bindSeg('stSeg',v=>{state=v;boostT=0;render();});
+  bindSeg('thSeg',v=>{ck.classList.toggle('day',v==='day');});
+
+  document.querySelectorAll('.pitbtn').forEach(b=>b.addEventListener('click',()=>{pitText=b.dataset.msg;render();
+    if(pitText){document.getElementById('cockpit').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});}}));
+
+  const track=$('track'), dot=$('kartDot'); const tlen=track.getTotalLength();
+  const hist=[]; for(let i=0;i<120;i++)hist.push(50);
+  let t=0, boostT=0, lapT=41.2;
+
+  function sim(){
+    const v=Math.max(8,46+22*Math.sin(t/2.3)+6*Math.sin(t/0.9));
+    const dv=22/2.3*Math.cos(t/2.3)+6/0.9*Math.cos(t/0.9);
+    let p=Math.max(-2.5,Math.min(8,3.2+dv*0.55));
+    return {v,p};
+  }
+
+  function render(){
+    const {v,p}=sim();
+    const lost=state==='lost', limp=state==='limp', boost=state==='boost';
+    let pw=p; if(boost&&boostT<5)pw=Math.min(9.6,p+2.4);
+    if(limp)pw=Math.min(pw,2.0);
+    let spd=limp?Math.min(v,18):v;
+    ck.classList.toggle('lost',lost); ck.classList.toggle('limp',limp);
+
+    // power bar: 4 regen segs (0..-2.5kW), 16 power segs (0..10 kW)
+    segs.forEach((s,i)=>{
+      s.className='seg-c';
+      if(lost)return;
+      if(i<4){ const need=(4-i)*0.625; if(pw<0 && -pw>=need-0.3) s.classList.add('on','r'); }
+      else { const k=i-4; const need=(k+1)*0.625; if(pw>0 && pw>=need-0.3) s.classList.add('on', (boost&&boostT<5)?'b':'p'); }
+    });
+
+    const soc=82-(t/60)%3;
+    $('speed').textContent=lost?'—':Math.round(spd);
+    $('pw').textContent=lost?'— kW':(pw<0?'−':'')+Math.abs(pw).toFixed(1)+' kW';
+    $('soc').innerHTML=(lost?'—':Math.round(soc))+'<small>%</small>';
+    $('socBar').style.width=soc+'%';
+    $('range').innerHTML=(lost?'—':Math.round(soc*0.38))+'<small>km</small>';
+    $('mode').textContent=limp?'LIMP':'SPORT';
+    $('dCan').className=lost?'off':'';
+    $('ckTemp').textContent='BAT 34°';
+
+    // boost
+    const bs=$('bState'), bt=$('bTime'); let left=2;
+    if(boost){
+      if(boostT<5){bs.textContent='ACTIVE';bs.className='boost-state active';bt.textContent=(5-boostT).toFixed(1)+' s';left=1;}
+      else if(boostT<25){bs.textContent='CHARGING';bs.className='boost-state chg';bt.textContent=Math.ceil(25-boostT)+' s';left=1;}
+      else {bs.textContent='READY';bs.className='boost-state';bt.innerHTML='&nbsp;';left=1;}
+    } else {bs.textContent=limp?'LOCKED':'READY';bs.className='boost-state'+(limp?' chg':'');bt.innerHTML='&nbsp;';}
+    [...bDots.children].forEach((d,i)=>d.className=i<left?'full':'');
+
+    // tech
+    const rpm=Math.round(spd*75), tq=Math.max(0,pw)*1000/(Math.max(rpm,300)*2*Math.PI/60);
+    const set=(id,txt)=>{$(id).textContent=lost?'—':txt;};
+    set('t-rpm',rpm.toLocaleString('de-AT'));
+    set('t-tq',Math.round(tq)+' Nm');
+    set('t-pw',pw.toFixed(1)+' kW');
+    set('t-soc',Math.round(soc)+' %');
+    const volt=51.8-pw*0.12; set('t-v',volt.toFixed(1)+' V');
+    set('t-i',Math.round(pw*1000/volt)+' A');
+    $('t-can').textContent=lost?'TIMEOUT':'ONLINE';
+    $('t-fps').textContent=lost?'0':String(405+Math.round(Math.sin(t*3)*7));
+    $('t-drv').textContent=limp?'LIMP HOME':'DRIVE';
+    document.querySelectorAll('#ck .age:not(.na)').forEach(a=>a.classList.toggle('stale',lost));
+
+    // lap
+    $('lapT').textContent=lost?'—':('0:'+lapT.toFixed(1).padStart(4,'0'));
+
+    // alert + pit
+    const al=$('alert');
+    if(lost){al.hidden=false;al.textContent='CAN DATA LOST · 0.8 s';}
+    else if(limp){al.hidden=false;al.textContent='LIMP HOME · POWER LIMITED';}
+    else al.hidden=true;
+    const pm=$('pitMsg'); pm.hidden=!pitText; pm.textContent='PIT ▸ '+pitText;
+
+    // pit dashboard
+    $('pSpd').textContent=lost?'—':Math.round(spd);
+    $('pPw').textContent=lost?'—':pw.toFixed(1);
+    $('pSoc').textContent=lost?'—':Math.round(soc);
+    $('curLap').textContent='0:'+lapT.toFixed(1).padStart(4,'0')+'…';
+    const pt=track.getPointAtLength(((t*0.019)%1)*tlen);
+    dot.setAttribute('cx',pt.x.toFixed(1)); dot.setAttribute('cy',pt.y.toFixed(1));
+    if(!lost){hist.push(spd);hist.shift();}
+    // y: 80 km/h → 20, 0 → 90
+    const pts2=hist.map((s,i)=>[(i/(hist.length-1))*300, 90-s*(70/80)]);
+    $('sparkLine').setAttribute('points',pts2.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '));
+    $('sparkArea').setAttribute('d','M0,110 L'+pts2.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' L')+' L300,110 Z');
+    const last=pts2[pts2.length-1]; $('sparkEnd').setAttribute('cy',last[1].toFixed(1));
+  }
+
+  // warm up history
+  for(let i=0;i<120;i++){t+=0.5;hist.push(sim().v);hist.shift();}
+  render();
+  if(!reduce){
+    setInterval(()=>{t+=0.1;boostT=(boostT+0.1)%30;lapT+=0.1;if(lapT>52.5)lapT=0;render();},100);
+  }
+})();
+</script>
