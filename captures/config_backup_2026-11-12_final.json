@@ -1,0 +1,29 @@
+{
+  "stat": {
+    "drive": false,
+    "enable_drive": true,
+    "charging": false,
+    "limp_home": false,
+    "key_position": 1,
+    "vmax_kmh": 40,
+    "map": 1,
+    "gear": 0,
+    "parity_f": 1.0,
+    "parity_f_pwr": 0.0,
+    "raw": "42 23 01 ff 00 00 00 00"
+  },
+  "boost": {
+    "enabled": true,
+    "requested": false,
+    "active": false,
+    "ready": false,
+    "t_boost_max_s": 9.0,
+    "t_chg_max_s": 5.0,
+    "n_boost": 0,
+    "f_map_boost": 1.4,
+    "t_boost_s": 9.0,
+    "t_chg_s": 5.0,
+    "raw": "01 12 0a 00 28 12 0a 00"
+  },
+  "saved_at": "2026-11-12 15:34:11"
+}

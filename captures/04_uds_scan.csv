@@ -1,0 +1,20 @@
+request_id,request,resp_id,ext,dlc,data
+7DF,default session,760,0,7,06 50 01 00 32 01 F4
+7DF,default session,281,0,8,06 50 01 00 32 00 C8 FF
+7DF,default session,285,0,8,06 50 01 00 32 00 C8 FF
+7DF,default session,283,0,8,06 50 01 00 32 00 C8 FF
+7DF,default session,287,0,8,06 50 01 00 32 00 C8 FF
+7DF,tester present,760,0,3,02 7E 00
+7DF,tester present,287,0,8,02 7E 00 FF FF FF FF FF
+7DF,tester present,281,0,8,02 7E 00 FF FF FF FF FF
+7DF,tester present,285,0,8,02 7E 00 FF FF FF FF FF
+7DF,tester present,283,0,8,02 7E 00 FF FF FF FF FF
+7DF,VIN F190,760,0,4,03 7F 22 22
+7DF,spare part F187,760,0,4,03 7F 22 22
+7DF,sw version F189,760,0,4,03 7F 22 22
+7DF,hw version F191,760,0,4,03 7F 22 22
+7DF,serial F18C,760,0,4,03 7F 22 22
+7DF,serial F18C,287,0,8,10 08 62 F1 8C 01 18 2E
+7DF,serial F18C,281,0,8,10 08 62 F1 8C 01 18 2E
+7DF,serial F18C,285,0,8,10 08 62 F1 8C 01 18 2E
+7DF,serial F18C,283,0,8,10 08 62 F1 8C 01 18 2E
