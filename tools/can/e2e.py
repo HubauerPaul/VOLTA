@@ -13,13 +13,19 @@ SIMPLE_IDS = {
     0x22E, 0x22F, 0x230, 0x231, 0x232, 0x235, 0x236, 0x237, 0x238, 0x239,
 }
 
-# Data ID per counter value 0..15.
+# Data ID per counter value 0..15, verified on all captures (01, 02, 05).
 PROFILE2_DATA_IDS = {
     0x001: bytes.fromhex("4C A3 A1 2C A4 21 06 98 97 49 58 13 28 8F 68 DB"),
     0x002: bytes.fromhex("F0 76 F7 83 8D C0 6A 9C 40 72 A9 A6 24 9A A5 D6"),
     0x006: bytes.fromhex("A9 95 4F B2 55 30 89 1B 63 1D BC B9 73 11 A3 CB"),
     0x007: bytes.fromhex("55 1D A3 44 1C 2C 9D 1F 21 08 C4 98 0F 01 49 38"),
     0x010: bytes.fromhex("F8 EC 53 C4 30 58 86 F6 37 B9 41 DA 62 E9 94 23"),
+}
+
+# CRC scheme NOT known. These tables were fitted on the idle capture only, where the payload
+# never changes, so any data ID fits; they fail on the throttle sweep and on capture 05.
+# Byte 0 is still a CRC and byte 1 bits 0-3 the alive counter. Kept for reference only.
+UNSOLVED_IDS = {
     0x015: bytes.fromhex("90 42 1B C9 A9 7B 22 F0 E2 30 69 BB DB 09 50 82"),
     0x028: bytes.fromhex("FA 88 1E 6C 1D 6F F9 8B 1B 69 FF 8D FC 8E 18 6A"),
     0x064: bytes.fromhex("CA B8 2E 5C 2D 5F C9 BB 2B 59 CF BD CC BE 28 5A"),
